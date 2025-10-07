@@ -5,7 +5,7 @@
       "createdAt": "2025-10-07T00:00:00.000Z",
       "updatedAt": "2025-10-07T00:00:00.000Z",
       "created": "2025-10-07T17:43:58.152Z",
-      "updated": "2025-10-07T18:05:06.312Z"
+      "updated": "2025-10-07T18:08:45.684Z"
     },
     "tasks": [
       {
@@ -251,7 +251,7 @@
         "id": 19,
         "title": "Style Selection UI",
         "description": "Build user interface for selecting and changing transcript styles",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           14
@@ -303,7 +303,7 @@
         "id": 23,
         "title": "Copy to Clipboard Functionality",
         "description": "Implement copy functionality for transcripts with toast feedback",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           16
@@ -316,7 +316,7 @@
         "id": 24,
         "title": "Native Share Integration",
         "description": "Implement native share sheet for easy content sharing",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           16
@@ -329,7 +329,7 @@
         "id": 25,
         "title": "Text Export Functionality",
         "description": "Implement export to TXT and Markdown formats",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           16
@@ -342,7 +342,7 @@
         "id": 26,
         "title": "PDF Export Implementation",
         "description": "Build PDF export with proper formatting and branding",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           25
@@ -381,7 +381,7 @@
         "id": 29,
         "title": "Multi-language Support",
         "description": "Implement support for 9 languages in transcription and UI",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "dependencies": [
           13
