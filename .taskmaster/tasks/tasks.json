@@ -5,7 +5,7 @@
       "createdAt": "2025-10-07T00:00:00.000Z",
       "updatedAt": "2025-10-07T00:00:00.000Z",
       "created": "2025-10-07T17:43:58.152Z",
-      "updated": "2025-10-07T17:59:28.944Z"
+      "updated": "2025-10-07T18:03:25.113Z"
     },
     "tasks": [
       {
@@ -115,7 +115,7 @@
         "id": 9,
         "title": "User Profile Management",
         "description": "Implement user profile creation and management functionality",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           7,
@@ -129,7 +129,7 @@
         "id": 10,
         "title": "Protected Routes Implementation",
         "description": "Add authentication guards to protect app screens",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           7,

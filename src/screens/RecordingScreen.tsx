@@ -230,30 +230,45 @@ export default function RecordingScreen({ navigation }: any) {
     setProcessingStage(0);
     
     try {
-      // Stage 1: Upload audio (simulated)
-      setProcessingStage(1);
-      setProcessingState(recordingId, true, 20);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { ProcessingPipeline, ProcessingStage } = await import('../services/processingPipeline');
+      const { useAuth } = await import('../contexts/AuthContext');
       
-      // Stage 2: Transcription (simulated)
-      setProcessingStage(2);
-      setProcessingState(recordingId, true, 50);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Get user ID (you'll need to pass this from props or context)
+      // For now, using a placeholder - this will be replaced when auth is fully integrated
+      const userId = 'user-id-placeholder'; // TODO: Get from auth context
       
-      // Stage 3: AI Enhancement (simulated)
-      setProcessingStage(3);
-      setProcessingState(recordingId, true, 80);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await ProcessingPipeline.process({
+        userId,
+        audioUri,
+        recordingId,
+        style: recordingSettings.defaultStyle,
+        language: recordingSettings.defaultLanguage,
+        isPremium: false, // TODO: Get from user profile
+        onProgress: (stage, progress) => {
+          // Map stages to stage numbers (1-4)
+          const stageMap = {
+            [ProcessingStage.UPLOADING]: 1,
+            [ProcessingStage.TRANSCRIBING]: 2,
+            [ProcessingStage.ENHANCING]: 3,
+            [ProcessingStage.SAVING]: 4,
+            [ProcessingStage.COMPLETE]: 4,
+            [ProcessingStage.ERROR]: 0,
+          };
+          
+          setProcessingStage(stageMap[stage] || 0);
+          setProcessingState(recordingId, true, Math.round(progress));
+        },
+        onStageComplete: (stage) => {
+          console.log(`Stage complete: ${stage}`);
+        },
+      });
       
-      // Stage 4: Finalizing
-      setProcessingStage(4);
-      setProcessingState(recordingId, true, 100);
+      if (result.error) {
+        throw result.error;
+      }
       
-      // Simulate transcript generation
-      const mockTranscript = "This is a sample transcript of your voice recording. The AI would process your actual audio and create a clean, well-structured text output here.";
-      const mockEnhancedTranscript = "This is a sample transcript of your voice recording. The AI has processed your audio and created this clean, well-structured text output with improved grammar and organization.";
-      
-      updateTranscript(recordingId, mockTranscript, mockEnhancedTranscript);
+      // Update local store with results
+      updateTranscript(recordingId, result.originalTranscript, result.enhancedTranscript);
       
       // Hide processing modal
       setShowProcessing(false);
@@ -269,7 +284,7 @@ export default function RecordingScreen({ navigation }: any) {
       setTimeout(() => {
         navigation.replace('Library', { 
           screen: 'RecordingDetail', 
-          params: { recordingId } 
+          params: { recordingId: result.recordingId } 
         });
       }, 1000);
       
@@ -281,7 +296,7 @@ export default function RecordingScreen({ navigation }: any) {
       Toast.show({
         type: 'error',
         text1: 'Processing Failed',
-        text2: 'Could not process your recording. Please try again.',
+        text2: error instanceof Error ? error.message : 'Could not process your recording. Please try again.',
       });
     }
   };
