@@ -3,14 +3,16 @@
     "metadata": {
       "description": "Main development track for VoiceFlow mobile app",
       "createdAt": "2025-10-07T00:00:00.000Z",
-      "updatedAt": "2025-10-07T00:00:00.000Z"
+      "updatedAt": "2025-10-07T00:00:00.000Z",
+      "created": "2025-10-07T17:43:58.152Z",
+      "updated": "2025-10-07T17:49:07.305Z"
     },
     "tasks": [
       {
         "id": 1,
         "title": "Project Setup & Dependencies",
         "description": "Install and configure all required dependencies for Supabase, OpenAI, and Google OAuth integration",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "dependencies": [],
         "details": "Install @supabase/supabase-js, openai, @react-native-google-signin/google-signin, react-native-document-picker, rn-fetch-blob, react-native-pdf, react-native-share, react-native-dotenv. Configure babel for environment variables. Create .env file structure. Update .gitignore to exclude .env files.",
@@ -21,9 +23,11 @@
         "id": 2,
         "title": "Supabase Client Configuration",
         "description": "Set up Supabase client with proper configuration and create reusable client instance",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
-        "dependencies": [1],
+        "dependencies": [
+          1
+        ],
         "details": "Create src/lib/supabase.ts with Supabase client configuration. Add proper TypeScript types. Implement client initialization with environment variables. Create helper functions for common operations. Set up auto-refresh for auth tokens.",
         "testStrategy": "Test connection to Supabase project. Verify auth token refresh. Confirm TypeScript types work correctly.",
         "subtasks": []
@@ -32,9 +36,11 @@
         "id": 3,
         "title": "Database Schema Implementation",
         "description": "Create all required database tables in Supabase with proper relationships and indexes",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
-        "dependencies": [2],
+        "dependencies": [
+          2
+        ],
         "details": "Create SQL migrations for: profiles, recordings, folders, tags, recording_folders, recording_tags, shared_recordings, usage_stats tables. Add proper indexes for performance. Set up foreign key relationships. Include default values and constraints. Add trigger for updated_at timestamps.",
         "testStrategy": "Run migrations in Supabase SQL editor. Verify all tables created with correct schema. Test relationships with sample data.",
         "subtasks": []
@@ -43,9 +49,11 @@
         "id": 4,
         "title": "Row Level Security (RLS) Policies",
         "description": "Implement comprehensive RLS policies to secure all database tables",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
-        "dependencies": [3],
+        "dependencies": [
+          3
+        ],
         "details": "Enable RLS on all tables. Create policies for SELECT, INSERT, UPDATE, DELETE operations. Ensure users can only access their own data. Create policies for shared recordings. Add service role exceptions where needed. Test policy enforcement.",
         "testStrategy": "Attempt unauthorized access to verify policies block it. Test all CRUD operations as authenticated user. Verify service role can bypass RLS.",
         "subtasks": []
@@ -54,9 +62,11 @@
         "id": 5,
         "title": "Supabase Storage Configuration",
         "description": "Set up storage buckets for audio files with proper access policies",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
-        "dependencies": [2],
+        "dependencies": [
+          2
+        ],
         "details": "Create 'audio-recordings' bucket in Supabase Storage. Configure size limits (50MB free, 150MB premium). Set allowed MIME types (audio/webm, audio/mp4, audio/mpeg, audio/m4a). Implement RLS policies for bucket access. Create file path structure (user_id/recording_id.m4a).",
         "testStrategy": "Upload test audio file. Verify size limits enforced. Test download URLs work. Confirm unauthorized users can't access files.",
         "subtasks": []
@@ -67,7 +77,9 @@
         "description": "Configure Google OAuth for both iOS and Android platforms",
         "status": "pending",
         "priority": "high",
-        "dependencies": [1],
+        "dependencies": [
+          1
+        ],
         "details": "Install and configure @react-native-google-signin/google-signin. Add Google OAuth client IDs to app.json. Configure iOS URL schemes. Set up Android SHA-1 fingerprints. Create GoogleSignin helper functions. Add proper error handling for OAuth flow.",
         "testStrategy": "Test OAuth flow on iOS simulator/device. Test OAuth flow on Android emulator/device. Verify tokens received correctly.",
         "subtasks": []
@@ -78,7 +90,10 @@
         "description": "Create authentication context and state management for user sessions",
         "status": "pending",
         "priority": "high",
-        "dependencies": [2, 6],
+        "dependencies": [
+          2,
+          6
+        ],
         "details": "Create src/contexts/AuthContext.tsx. Implement useAuth hook. Add Supabase auth state listener. Handle session persistence with expo-secure-store. Create sign in, sign out, and session refresh functions. Add loading and error states. Implement automatic session recovery on app start.",
         "testStrategy": "Test auth state persists across app restarts. Verify session refresh works. Test sign out clears all auth data.",
         "subtasks": []
@@ -89,7 +104,9 @@
         "description": "Build authentication UI screens with Google OAuth integration",
         "status": "pending",
         "priority": "high",
-        "dependencies": [7],
+        "dependencies": [
+          7
+        ],
         "details": "Create LoginScreen.tsx with brand gradient background. Add 'Continue with Google' button with proper styling. Implement glassmorphism card for auth. Add loading states during OAuth. Create error handling UI. Add privacy policy and terms links. Implement welcome screen for new users.",
         "testStrategy": "Test Google sign-in flow end-to-end. Verify error messages display correctly. Test loading states. Confirm new user sees welcome flow.",
         "subtasks": []
@@ -100,7 +117,10 @@
         "description": "Implement user profile creation and management functionality",
         "status": "pending",
         "priority": "high",
-        "dependencies": [7, 3],
+        "dependencies": [
+          7,
+          3
+        ],
         "details": "Create profile creation flow for new users. Sync profile data with Supabase profiles table. Implement avatar upload to Supabase Storage. Add display name editing. Create subscription tier tracking. Implement real-time profile sync. Add profile data validation.",
         "testStrategy": "Test profile creation for new user. Verify avatar upload works. Test display name update syncs to database. Confirm subscription tier updates correctly.",
         "subtasks": []
@@ -111,7 +131,10 @@
         "description": "Add authentication guards to protect app screens",
         "status": "pending",
         "priority": "high",
-        "dependencies": [7, 8],
+        "dependencies": [
+          7,
+          8
+        ],
         "details": "Create ProtectedRoute wrapper component. Redirect unauthenticated users to login. Show loading state while checking auth. Implement deep linking with auth guards. Create auth-aware navigation structure. Add session timeout handling.",
         "testStrategy": "Test unauthenticated access redirects to login. Verify authenticated users can access all screens. Test deep links require auth.",
         "subtasks": []
@@ -122,7 +145,9 @@
         "description": "Set up OpenAI API client for Whisper and GPT-4 integration",
         "status": "pending",
         "priority": "high",
-        "dependencies": [1],
+        "dependencies": [
+          1
+        ],
         "details": "Create src/lib/openai.ts with OpenAI client. Configure API key from environment. Create wrapper functions for Whisper transcription. Add GPT-4 chat completion functions. Implement error handling and retry logic. Add request timeout configuration. Create cost tracking helpers.",
         "testStrategy": "Test OpenAI client initialization. Verify API key authentication works. Test simple completion request.",
         "subtasks": []
@@ -133,7 +158,9 @@
         "description": "Implement audio file upload functionality to cloud storage",
         "status": "pending",
         "priority": "high",
-        "dependencies": [5],
+        "dependencies": [
+          5
+        ],
         "details": "Create audio upload function in src/utils/audioUtils.ts. Implement file compression before upload. Add upload progress tracking. Generate unique file paths (user_id/timestamp_id.m4a). Handle upload errors and retries. Implement upload cancellation. Add file size validation. Create cleanup for failed uploads.",
         "testStrategy": "Test audio upload with small and large files. Verify progress tracking updates. Test upload cancellation. Confirm failed uploads cleanup temporary files.",
         "subtasks": []
@@ -144,7 +171,10 @@
         "description": "Integrate OpenAI Whisper API for real audio transcription",
         "status": "pending",
         "priority": "high",
-        "dependencies": [11, 12],
+        "dependencies": [
+          11,
+          12
+        ],
         "details": "Create transcription service in src/services/transcription.ts. Implement Whisper API calls with uploaded audio URLs. Add language detection and manual override. Handle various audio formats. Implement chunking for large files. Add retry logic for failed transcriptions. Create progress tracking. Store raw transcription results.",
         "testStrategy": "Test transcription with various audio files. Verify language detection works. Test long audio file handling. Confirm errors retry appropriately.",
         "subtasks": []
@@ -155,7 +185,9 @@
         "description": "Build AI enhancement service using GPT-4 for text improvement",
         "status": "pending",
         "priority": "high",
-        "dependencies": [11],
+        "dependencies": [
+          11
+        ],
         "details": "Create enhancement service in src/services/enhancement.ts. Implement prompt templates for each style (Note, Email, Blog, Summary, Transcript, Custom). Add GPT-4 API calls with templates. Implement style-specific processing logic. Add response validation and error handling. Create regeneration functionality. Add custom prompt support for premium users. Implement cost tracking.",
         "testStrategy": "Test enhancement for all 6 styles. Verify output quality matches style. Test regeneration with different styles. Confirm custom prompts work for premium users.",
         "subtasks": []
@@ -166,7 +198,11 @@
         "description": "Replace mock processing with real AI pipeline",
         "status": "pending",
         "priority": "high",
-        "dependencies": [12, 13, 14],
+        "dependencies": [
+          12,
+          13,
+          14
+        ],
         "details": "Refactor RecordingScreen.tsx processRecording function. Implement: 1) Upload audio to Supabase Storage, 2) Call Whisper for transcription, 3) Call GPT-4 for enhancement, 4) Save results to database. Add comprehensive error handling at each stage. Implement progress tracking (0-25%, 25-70%, 70-100%). Add retry logic. Create processing cancellation. Implement background processing support.",
         "testStrategy": "Test full pipeline end-to-end. Verify progress updates correctly. Test error handling at each stage. Confirm cancellation works. Test background processing.",
         "subtasks": []
@@ -177,7 +213,10 @@
         "description": "Migrate recording data from local storage to Supabase database",
         "status": "pending",
         "priority": "high",
-        "dependencies": [3, 4],
+        "dependencies": [
+          3,
+          4
+        ],
         "details": "Update Recording interface to match Supabase schema. Add server-side fields (user_id, audio_url, etc.). Create migration service for existing local recordings. Implement CRUD operations with Supabase. Add optimistic UI updates. Create offline queue for failed operations. Implement data sync logic. Add conflict resolution.",
         "testStrategy": "Test creating new recording in database. Verify updates sync correctly. Test offline queue works. Confirm migration preserves data.",
         "subtasks": []
@@ -188,7 +227,9 @@
         "description": "Implement real-time data synchronization across devices",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Set up Supabase Realtime subscriptions. Create real-time listeners for recordings table. Implement optimistic updates with eventual consistency. Add conflict resolution for simultaneous edits. Create sync status indicators. Handle subscription lifecycle. Add reconnection logic. Implement selective sync based on filters.",
         "testStrategy": "Test sync across two devices. Verify changes appear in real-time. Test conflict resolution. Confirm reconnection works after network loss.",
         "subtasks": []
@@ -199,7 +240,9 @@
         "description": "Implement offline capability with operation queue and sync",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Create offline operation queue. Implement queue persistence with MMKV. Add operation types (create, update, delete). Create sync manager for queue processing. Implement network state detection. Add retry logic with exponential backoff. Create UI indicators for offline state. Handle queue conflicts on sync.",
         "testStrategy": "Test creating recordings offline. Verify operations queue correctly. Test sync when back online. Confirm UI shows offline state.",
         "subtasks": []
@@ -210,7 +253,9 @@
         "description": "Build user interface for selecting and changing transcript styles",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [14],
+        "dependencies": [
+          14
+        ],
         "details": "Create StyleSelector component with modal. Design cards for each style (Note, Email, Blog, Summary, Transcript, Custom). Add style descriptions and preview examples. Implement style selection in ProcessingModal. Add regenerate button in RecordingDetailModal. Create custom prompt input for premium users. Add style change confirmation.",
         "testStrategy": "Test style selection during processing. Verify regenerate with different styles works. Test custom prompt for premium users. Confirm free users see 3 basic styles only.",
         "subtasks": []
@@ -221,7 +266,9 @@
         "description": "Implement organization system with folders for recordings",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Create folders table operations. Build FolderManagement screen. Add create/edit/delete folder functionality. Implement folder assignment for recordings. Create folder navigation in LibraryScreen. Add bulk move to folder operations. Implement folder color customization. Create default folders (Recent, Favorites). Add folder sorting options.",
         "testStrategy": "Test creating and renaming folders. Verify recordings can be moved to folders. Test bulk operations. Confirm folder filtering works in library.",
         "subtasks": []
@@ -232,7 +279,9 @@
         "description": "Build tagging system for flexible recording organization",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Create tags table operations. Build TagManager component. Add create/edit/delete tag functionality. Implement tag color coding. Create tag assignment interface. Add multi-tag support for recordings. Implement tag-based filtering. Create tag autocomplete. Add tag usage statistics.",
         "testStrategy": "Test creating tags with colors. Verify multi-tag assignment works. Test tag filtering in library. Confirm autocomplete suggests existing tags.",
         "subtasks": []
@@ -243,7 +292,9 @@
         "description": "Build powerful search functionality across all recording content",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Implement full-text search using Supabase. Add search across title, transcript, and enhanced transcript. Create search filters (date range, duration, language, style, folder, tags). Implement search history with persistence. Add search suggestions. Create relevance-based sorting. Implement search result highlighting. Add saved searches feature.",
         "testStrategy": "Test search finds recordings by various fields. Verify filters work correctly. Test search history persists. Confirm relevance sorting makes sense.",
         "subtasks": []
@@ -254,7 +305,9 @@
         "description": "Implement copy functionality for transcripts with toast feedback",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Use expo-clipboard for copy operations. Add copy buttons in RecordingDetailModal. Implement copy for both original and enhanced transcripts. Add toast notification on successful copy. Create copy formatting options (plain text, with timestamps, etc.). Add copy button in RecordingCard. Implement haptic feedback on copy.",
         "testStrategy": "Test copy from detail modal. Verify toast shows success. Test different format options. Confirm copied text is correct.",
         "subtasks": []
@@ -265,7 +318,9 @@
         "description": "Implement native share sheet for easy content sharing",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Install and configure react-native-share. Create share functions for transcripts. Implement share with audio file option. Add share to common apps (email, messages, etc.). Create share modal with options. Add share tracking in analytics. Implement share from RecordingDetailModal and RecordingCard.",
         "testStrategy": "Test share on iOS and Android. Verify various share targets work. Test sharing with audio file. Confirm share modal displays correctly.",
         "subtasks": []
@@ -276,7 +331,9 @@
         "description": "Implement export to TXT and Markdown formats",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Create export service in src/services/export.ts. Implement TXT export with proper formatting. Add Markdown export with headers and metadata. Create export options modal. Add file naming with timestamp and title. Implement save to device storage. Add share exported file option. Create export history.",
         "testStrategy": "Test TXT export saves correctly. Verify Markdown formatting. Test file naming. Confirm exported files can be shared.",
         "subtasks": []
@@ -287,7 +344,9 @@
         "description": "Build PDF export with proper formatting and branding",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [25],
+        "dependencies": [
+          25
+        ],
         "details": "Install and configure react-native-pdf library. Create PDF generation service. Implement formatting (headers, fonts, spacing). Add VoiceFlow branding to PDF. Include metadata (date, duration, language). Create multi-column layout for comparison view. Add page numbers. Implement PDF preview before export.",
         "testStrategy": "Test PDF generation with various content lengths. Verify formatting looks professional. Test preview functionality. Confirm branding appears correctly.",
         "subtasks": []
@@ -298,7 +357,9 @@
         "description": "Implement Microsoft Word document export",
         "status": "pending",
         "priority": "low",
-        "dependencies": [25],
+        "dependencies": [
+          25
+        ],
         "details": "Research and install DOCX generation library. Create DOCX export service. Implement proper Word formatting (styles, headings). Add metadata properties. Create comparison layout option. Implement table support for metadata. Add export options (include original, enhanced, or both).",
         "testStrategy": "Test DOCX opens in Microsoft Word. Verify formatting preserved. Test various export options. Confirm metadata is correct.",
         "subtasks": []
@@ -309,7 +370,9 @@
         "description": "Build shareable link system with expiration and password protection",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [16],
+        "dependencies": [
+          16
+        ],
         "details": "Create shared_recordings table operations. Implement unique share token generation. Build link creation modal with options. Add expiration date selection (1 day, 7 days, 30 days, never). Implement password protection option. Create public viewing page. Add view count tracking. Implement share link revocation. Create share link management screen.",
         "testStrategy": "Test link generation creates unique URLs. Verify expiration works correctly. Test password protection. Confirm view counting accurate. Test link revocation.",
         "subtasks": []
@@ -320,7 +383,9 @@
         "description": "Implement support for 9 languages in transcription and UI",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [13],
+        "dependencies": [
+          13
+        ],
         "details": "Add language detection in Whisper calls. Implement manual language selection UI. Create language picker component. Add support for: English, Spanish, French, German, Portuguese, Italian, Japanese, Korean, Chinese (Simplified). Implement language-specific UI adjustments. Add language badge in RecordingCard. Create language filter in search. Store language preference in user profile.",
         "testStrategy": "Test auto-detection for various languages. Verify manual selection works. Test UI adjusts for different languages. Confirm language persists in profile.",
         "subtasks": []
@@ -331,7 +396,10 @@
         "description": "Add ability to translate transcripts to different languages",
         "status": "pending",
         "priority": "low",
-        "dependencies": [29, 14],
+        "dependencies": [
+          29,
+          14
+        ],
         "details": "Create translation service using GPT-4. Implement translation button in RecordingDetailModal. Add target language selector. Create translation preview. Implement save translated version option. Add translation to export options. Create translation history. Implement bulk translation for multiple recordings.",
         "testStrategy": "Test translation for various language pairs. Verify translation quality. Test saving translated versions. Confirm translation appears in exports.",
         "subtasks": []
@@ -342,7 +410,9 @@
         "description": "Integrate Stripe or RevenueCat for subscription management",
         "status": "pending",
         "priority": "high",
-        "dependencies": [9],
+        "dependencies": [
+          9
+        ],
         "details": "Choose between Stripe and RevenueCat (recommend RevenueCat for mobile). Install and configure SDK. Set up product IDs for subscriptions. Create subscription plans (Premium monthly/annual). Implement purchase flow. Add receipt validation. Create subscription status sync with Supabase. Implement restoration for previous purchases. Add subscription management screen.",
         "testStrategy": "Test subscription purchase flow. Verify receipt validation works. Test subscription restoration. Confirm status syncs to database.",
         "subtasks": []
@@ -353,7 +423,9 @@
         "description": "Implement subscription tier logic and feature gating",
         "status": "pending",
         "priority": "high",
-        "dependencies": [31],
+        "dependencies": [
+          31
+        ],
         "details": "Create subscription constants (Free: 3min, 10 recordings; Premium: 15min, unlimited). Implement feature flags based on tier. Add recording duration enforcement. Create storage limit tracking. Implement graceful degradation at limits. Add upgrade prompts in UI. Create pricing display components. Implement annual discount logic (17% off).",
         "testStrategy": "Test free tier limits enforced correctly. Verify premium users get extended limits. Test upgrade prompts show at right times. Confirm pricing displays correctly.",
         "subtasks": []
@@ -364,7 +436,10 @@
         "description": "Implement comprehensive usage tracking for limits and analytics",
         "status": "pending",
         "priority": "high",
-        "dependencies": [31, 16],
+        "dependencies": [
+          31,
+          16
+        ],
         "details": "Create usage_stats table operations. Implement monthly usage reset. Add recording count tracking. Create duration tracking (cumulative minutes). Implement storage size calculation. Add usage warnings (80%, 100% of limit). Create usage statistics dashboard. Implement usage sync with Supabase. Add grace period logic.",
         "testStrategy": "Test usage increments correctly. Verify monthly reset works. Test warnings trigger at thresholds. Confirm dashboard shows accurate stats.",
         "subtasks": []
@@ -375,7 +450,9 @@
         "description": "Build premium-only features and feature gating",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [32],
+        "dependencies": [
+          32
+        ],
         "details": "Implement 15-minute recording for premium. Add custom AI prompts feature. Create all export formats access. Implement priority processing queue. Add early access feature flags. Create premium badge in UI. Implement feature gate modals with upgrade CTA. Add premium feature discovery.",
         "testStrategy": "Test premium features only accessible to subscribers. Verify free users see upgrade prompts. Test priority queue works. Confirm all premium features listed.",
         "subtasks": []
@@ -386,7 +463,10 @@
         "description": "Build smooth subscription management flows",
         "status": "pending",
         "priority": "medium",
-        "dependencies": [31, 32],
+        "dependencies": [
+          31,
+          32
+        ],
         "details": "Create upgrade modal with plan comparison. Implement plan selection UI. Add payment processing for upgrade. Create downgrade confirmation flow. Implement immediate upgrade, end-of-period downgrade. Add prorated refund handling. Create plan change success/error screens. Implement win-back offers for downgrades.",
         "testStrategy": "Test upgrade flow from free to premium. Verify downgrade scheduled correctly. Test prorated charges. Confirm win-back offers display.",
         "subtasks": []
@@ -441,7 +521,26 @@
         "description": "Prepare app for submission to iOS App Store and Google Play",
         "status": "pending",
         "priority": "low",
-        "dependencies": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 31, 32],
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          31,
+          32
+        ],
         "details": "Create app icons for all sizes (iOS and Android). Build screenshots for both stores (6.5\", 5.5\" for iOS; various for Android). Create app preview video. Write compelling store descriptions. Add keywords for ASO. Create privacy policy page. Write terms of service. Implement required app store metadata. Create promotional graphics. Build press kit. Set up TestFlight for iOS. Create Google Play beta track.",
         "testStrategy": "Review all assets meet store requirements. Test beta distribution. Verify metadata complete. Confirm privacy policy accessible.",
         "subtasks": []
