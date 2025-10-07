@@ -1,0 +1,131 @@
+# Configuration & Setup Tasks
+
+## 1. Configure TaskMaster AI API Keys
+
+To use TaskMaster AI's parse-prd and other AI-powered features, you need to add API keys to your MCP configuration:
+
+**File to edit**: `.cursor/mcp.json`
+
+**Add to the `env` section**:
+```json
+{
+  "mcpServers": {
+    "task-master-ai": {
+      "env": {
+        "OPENAI_API_KEY": "your-openai-api-key-here",
+        "ANTHROPIC_API_KEY": "your-anthropic-api-key-here (optional)",
+        "PERPLEXITY_API_KEY": "your-perplexity-api-key-here (for research features)"
+      }
+    }
+  }
+}
+```
+
+**How to get API keys**:
+- OpenAI: https://platform.openai.com/api-keys
+- Perplexity (optional, for research): https://www.perplexity.ai/settings/api
+- Anthropic (optional): https://console.anthropic.com/
+
+## 2. Create Supabase Project
+
+1. Go to https://supabase.com
+2. Sign in with GitHub
+3. Click "New Project"
+4. Name it "voiceflow-production"
+5. Set a strong database password (save it securely)
+6. Choose a region close to your target users
+7. Wait for project to be provisioned
+
+## 3. Get Supabase Credentials
+
+Once your project is ready:
+1. Go to Project Settings > API
+2. Copy the following:
+   - Project URL (SUPABASE_URL)
+   - anon/public key (SUPABASE_ANON_KEY)
+   - service_role key (SUPABASE_SERVICE_KEY) - Keep this SECRET!
+
+## 4. Set up Google OAuth
+
+1. Go to https://console.cloud.google.com
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Go to Credentials > Create Credentials > OAuth 2.0 Client ID
+5. For iOS:
+   - Application type: iOS
+   - Bundle ID: (from your app.json)
+6. For Android:  
+   - Application type: Android
+   - Package name: (from your app.json)
+   - SHA-1: Run `keytool -list -v -keystore ~/.android/debug.keystore`
+7. Save all Client IDs
+
+## 5. Get OpenAI API Key
+
+1. Go to https://platform.openai.com/api-keys
+2. Click "Create new secret key"
+3. Name it "VoiceFlow Mobile"
+4. Copy and save the key immediately (you won't see it again)
+5. Add billing information and set usage limits
+
+## 6. Create .env File in Project Root
+
+Create a `.env` file in your project root with:
+
+```env
+# Supabase
+SUPABASE_URL=your-supabase-url
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_KEY=your-service-role-key
+
+# OpenAI
+OPENAI_API_KEY=your-openai-api-key
+
+# Google OAuth
+GOOGLE_OAUTH_CLIENT_ID_IOS=your-ios-client-id
+GOOGLE_OAUTH_CLIENT_ID_ANDROID=your-android-client-id
+
+# Optional: Payment (when ready)
+STRIPE_PUBLISHABLE_KEY=
+REVENUECAT_API_KEY=
+```
+
+**IMPORTANT**: Add `.env` to your `.gitignore` file!
+
+## 7. Install Additional Dependencies
+
+Run these commands:
+```bash
+npm install @supabase/supabase-js
+npm install openai
+npm install @react-native-google-signin/google-signin
+npm install react-native-document-picker
+npm install rn-fetch-blob
+npm install react-native-pdf
+npm install react-native-share
+npm install react-native-dotenv
+```
+
+## 8. Configure env variables in React Native
+
+1. Install dotenv: `npm install react-native-dotenv`
+2. Add to `babel.config.js`:
+```javascript
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      ['module:react-native-dotenv', {
+        moduleName: '@env',
+        path: '.env',
+      }]
+    ]
+  };
+};
+```
+
+---
+
+**Once you complete these setup tasks, let me know and we'll proceed with implementation!**
+
