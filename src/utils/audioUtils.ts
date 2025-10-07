@@ -1,10 +1,23 @@
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import { uploadAudioFile, deleteAudioFile } from '../lib/supabase';
 
 export interface AudioProcessingResult {
   duration: number;
   fileSize: number;
   format: string;
+}
+
+export interface UploadProgress {
+  loaded: number;
+  total: number;
+  percentage: number;
+}
+
+export interface UploadResult {
+  path: string;
+  url: string;
+  error?: Error;
 }
 
 export class AudioUtils {
@@ -195,5 +208,246 @@ export class AudioUtils {
         linearPCMIsFloat: false,
       },
     };
+  }
+
+  /**
+   * Upload audio file to Supabase Storage
+   * @param audioUri - Local file URI
+   * @param userId - User ID for folder organization
+   * @param recordingId - Unique recording ID
+   * @param onProgress - Progress callback
+   * @returns Upload result with cloud URL
+   */
+  static async uploadToSupabase(
+    audioUri: string,
+    userId: string,
+    recordingId: string,
+    onProgress?: (progress: UploadProgress) => void
+  ): Promise<UploadResult> {
+    try {
+      // Validate file exists
+      const fileInfo = await FileSystem.getInfoAsync(audioUri);
+      if (!fileInfo.exists) {
+        throw new Error('Audio file does not exist');
+      }
+
+      // Validate file size (50MB max for free tier)
+      const maxSize = 52428800; // 50MB in bytes
+      if (fileInfo.size && fileInfo.size > maxSize) {
+        throw new Error(`File size ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB exceeds maximum of 50MB`);
+      }
+
+      // Convert file to Blob for upload
+      const blob = await this.fileUriToBlob(audioUri);
+
+      // Simulate progress tracking (since we don't have real progress from Supabase)
+      if (onProgress) {
+        onProgress({ loaded: 0, total: blob.size, percentage: 0 });
+      }
+
+      // Upload to Supabase Storage
+      const result = await uploadAudioFile(userId, recordingId, blob, (progress) => {
+        if (onProgress) {
+          onProgress({
+            loaded: progress * blob.size,
+            total: blob.size,
+            percentage: progress * 100,
+          });
+        }
+      });
+
+      // Final progress callback
+      if (onProgress) {
+        onProgress({ loaded: blob.size, total: blob.size, percentage: 100 });
+      }
+
+      return {
+        path: result.path,
+        url: result.url,
+      };
+    } catch (error) {
+      console.error('Error uploading audio to Supabase:', error);
+      return {
+        path: '',
+        url: '',
+        error: error instanceof Error ? error : new Error('Upload failed'),
+      };
+    }
+  }
+
+  /**
+   * Convert file URI to Blob for upload
+   * @param fileUri - Local file URI
+   * @returns Blob object
+   */
+  private static async fileUriToBlob(fileUri: string): Promise<Blob> {
+    try {
+      const response = await fetch(fileUri);
+      if (!response.ok) {
+        throw new Error('Failed to read file');
+      }
+      return await response.blob();
+    } catch (error) {
+      console.error('Error converting file to blob:', error);
+      throw new Error('Failed to convert file for upload');
+    }
+  }
+
+  /**
+   * Retry upload with exponential backoff
+   * @param audioUri - Local file URI
+   * @param userId - User ID
+   * @param recordingId - Recording ID
+   * @param onProgress - Progress callback
+   * @param maxRetries - Maximum retry attempts
+   * @returns Upload result
+   */
+  static async uploadWithRetry(
+    audioUri: string,
+    userId: string,
+    recordingId: string,
+    onProgress?: (progress: UploadProgress) => void,
+    maxRetries: number = 3
+  ): Promise<UploadResult> {
+    let lastError: Error | undefined;
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      if (attempt > 0) {
+        // Exponential backoff: wait 2^attempt seconds
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying upload in ${waitTime}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+
+      const result = await this.uploadToSupabase(audioUri, userId, recordingId, onProgress);
+
+      if (!result.error) {
+        return result;
+      }
+
+      lastError = result.error;
+      console.error(`Upload attempt ${attempt + 1} failed:`, result.error.message);
+    }
+
+    return {
+      path: '',
+      url: '',
+      error: lastError || new Error('Upload failed after retries'),
+    };
+  }
+
+  /**
+   * Cancel ongoing upload
+   * Note: This is a placeholder - actual implementation would need
+   * to use AbortController with fetch/XMLHttpRequest
+   */
+  static cancelUpload(): void {
+    console.log('Upload cancellation not yet implemented');
+    // In a real implementation, you would:
+    // 1. Store the AbortController for the current upload
+    // 2. Call abortController.abort() here
+    // 3. Clean up any partial uploads
+  }
+
+  /**
+   * Delete audio file from Supabase Storage
+   * @param filePath - Path in storage bucket
+   */
+  static async deleteFromSupabase(filePath: string): Promise<{ success: boolean; error?: Error }> {
+    try {
+      await deleteAudioFile(filePath);
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting audio from Supabase:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error('Delete failed'),
+      };
+    }
+  }
+
+  /**
+   * Cleanup failed upload
+   * Deletes both local and cloud files
+   * @param localUri - Local file URI
+   * @param cloudPath - Cloud storage path (optional)
+   */
+  static async cleanupFailedUpload(localUri: string, cloudPath?: string): Promise<void> {
+    try {
+      // Delete local file
+      const fileInfo = await FileSystem.getInfoAsync(localUri);
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(localUri);
+        console.log('Deleted local file after failed upload');
+      }
+
+      // Delete cloud file if it was partially uploaded
+      if (cloudPath) {
+        await this.deleteFromSupabase(cloudPath);
+        console.log('Deleted partial cloud upload');
+      }
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+    }
+  }
+
+  /**
+   * Validate file before upload
+   * @param fileUri - Local file URI
+   * @param maxSizeMB - Maximum file size in MB
+   * @returns Validation result
+   */
+  static async validateForUpload(
+    fileUri: string,
+    maxSizeMB: number = 50
+  ): Promise<{ valid: boolean; error?: string; fileInfo?: FileSystem.FileInfo }> {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+
+      if (!fileInfo.exists) {
+        return { valid: false, error: 'File does not exist' };
+      }
+
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      if (fileInfo.size && fileInfo.size > maxSizeBytes) {
+        return {
+          valid: false,
+          error: `File size ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB exceeds maximum of ${maxSizeMB}MB`,
+          fileInfo,
+        };
+      }
+
+      // Check file extension
+      const validExtensions = ['.m4a', '.mp3', '.wav', '.webm', '.mp4', '.mpeg'];
+      const hasValidExtension = validExtensions.some(ext => fileUri.toLowerCase().endsWith(ext));
+      
+      if (!hasValidExtension) {
+        return {
+          valid: false,
+          error: 'Invalid file format. Supported formats: M4A, MP3, WAV, WebM, MP4',
+          fileInfo,
+        };
+      }
+
+      return { valid: true, fileInfo };
+    } catch (error) {
+      console.error('Error validating file:', error);
+      return {
+        valid: false,
+        error: error instanceof Error ? error.message : 'Validation failed',
+      };
+    }
+  }
+
+  /**
+   * Get upload progress estimate based on file size and network speed
+   * @param fileSizeBytes - File size in bytes
+   * @param networkSpeedMbps - Estimated network speed in Mbps
+   * @returns Estimated upload time in seconds
+   */
+  static estimateUploadTime(fileSizeBytes: number, networkSpeedMbps: number = 5): number {
+    const fileSizeMb = fileSizeBytes / 1024 / 1024;
+    const estimatedSeconds = (fileSizeMb * 8) / networkSpeedMbps; // Convert to bits and divide by speed
+    return Math.ceil(estimatedSeconds);
   }
 }
