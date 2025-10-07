@@ -1,0 +1,17 @@
+---
+description: Pre prompt run checklist
+globs:
+alwaysApply: true
+---
+
+Review all the .md files under the md_instructions folder.
+If you've implemented something new that changes things, make sure to update the instructions found in the appropriate .md file.
+After reading the md files declare in bold. I HAVE REVIEWED THE MD FILES
+Any new documentation md files should be placed in the md_instructions folder
+Any new tests should be placed in the appropriate place in the tests folder
+
+if you create one off test scripts to verify something, make sure to delete the script afterwards. Only test scripts that belong to test suites for continuous integration should remain. 
+
+familiarize yourself with the mcp servers you have access to and use them when needed.
+
+If there's anything for me to do outside of the codebase, like setting up certain configurations within third party sites/services then write it down/ append it into a list file called FOR YOU TO DO
